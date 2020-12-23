@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.qnd.pithyblog.dao.ArticleMapper" >
+    <select id="selectAllArticles"  resultType="Article">
+        select * from Article
+    </select>
+<!--    查询所有博文数量-->
+    <select id="selectArticleNum" resultType="java.lang.Integer">
+        select count(*) from Article
+    </select>
+<!--    查询index页面三篇博文预览信息-->
+    <select id="selectArticle" resultType="map">
+        select id,title,date_format(create_time,"%Y-%m-%d %H:%i:%S") as create_time,processed_content,category,img_link from Article order by create_time desc limit #{index},3
+    </select>
+<!--    查询某分类博文数量-->
+    <select id="selectCategoryArticleNum" resultType="java.lang.Integer">
+        select count(*) from Article where category=#{category}
+    </select>
+<!--    按分类名查询index页面n篇博文预览信息-->
+    <select id="selectArticleByCategory" resultType="map">
+        select id,title,date_format(create_time,"%Y-%m-%d %H:%i:%S") as create_time,processed_content,category,img_link,date_format(create_time,"%d %b %Y") as date_day from Article where category=#{category} order by create_time desc limit #{index},#{n}
+    </select>
+    <!--    查询某标签下博文数量-->
+    <select id="selectLabelArticleNum" resultType="java.lang.Integer">
+        select count(*) from A_L where label=#{label}
+    </select>
+    <!--    按标签名查询index页面三篇博文预览信息-->
+    <select id="selectArticleByLabel" resultType="map">
+        select Article.id as id,Article.title as title,date_format(Article.create_time,"%Y-%m-%d %H:%i:%S") as create_time,Article.processed_content as processed_cotent,Article.category as category,Article.img_link as img_link from Article,A_L where A_L.label=#{label} and A_L.article=Article.id order by Article.create_time desc limit #{index},3
+    </select>
+    <!--    按标题查询博文数量-->
+    <select id="selectTitleArticleNum" resultType="java.lang.Integer">
+        select count(*) from Article where title like concat('%',#{title},'%')
+    </select>
+    <!--    按标题查询index页面n篇博文预览信息-->
+    <select id="selectArticleByTitle" resultType="map">
+        select id,title,date_format(create_time,"%Y-%m-%d %H:%i:%S") as create_time,processed_content,category,img_link,date_format(create_time,"%d %b %Y") as date_day from Article where title like concat('%',#{title},'%') order by create_time desc limit #{index},#{n}
+    </select>
+    <insert id="insertArticle">
+        insert into Article(id,title,create_time,modify_time,origin_content,processed_content,visits,category,img_link) values (#{id},#{title},#{create_time},#{modify_time}
+        #{origin_content},#{process_content},#{visits},#{category},#{img_link});
+    </insert>
+    <update id="updateArticle">
+         update into Article(id,title,create_time,modify_time,origin_content,processed_content,visits,category,img_link) values (#{id},#{title},#{create_time},#{modify_time}
+        #{origin_content},#{process_content},#{visits},#{category},#{img_link});
+    </update>
+
+    <!--    parameterType="int"可省略  基本数据类型可省略-->
+    <delete id="deleteArticle" parameterType="int">
+        delete from Article where id =#{id};
+    </delete>
+</mapper>
